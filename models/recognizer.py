@@ -51,6 +51,6 @@ class Recognizer(nn.Module):
         x = x.view(-1, 4, 3)
 
         # Softmax each feature
-        self.softmax(x)
+        x = self.softmax(x)
 
         return x

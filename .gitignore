@@ -47,7 +47,14 @@ coverage.xml
 *.pot
 
 # Images
-*.jpg 
+*.jpg
+*.jpeg
+*.png 
+
+# Models
+*.pth
 
 # Sphinx documentation
 docs/_build/
+tester.py
+dataset/
