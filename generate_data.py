@@ -3,6 +3,8 @@ import numpy as np
 from os import listdir, mkdir, makedirs
 from random import randint
 from tqdm import tqdm
+import torch
+from torch import from_numpy
 
 def rotate_image(image, angle):
 	image_center = tuple(np.array(image.shape[1::-1]) / 2)
@@ -14,34 +16,33 @@ ann_dict = {
     "red":      0,
     "blue":     1,
     "green":    2,
-    "oval":     3,
-    "romb":     4,
-    "wave":     5,
-    "clean":    6,
-    "strip":    7,
-    "full":     8,
-    "1":        9,
-    "2":        10,
-    "3":        11,
+    "oval":     0,
+    "romb":     1,
+    "wave":     2,
+    "clean":    0,
+    "strip":    1,
+    "full":     2,
+    "1":        0,
+    "2":        1,
+    "3":        2,
     }
 
 
-def generate_batch(batch_size=64, save=False):
+def generate_batch(batch_size=64, save=False, im_size=512):
 
     bcg_path = 'dataset/backgrounds/'
     img_path = 'dataset/clean_cards/'
 
-    backs = [bcg_path+x for x in listdir(bcg_path)]
-    cards = [img_path+x for x in listdir(img_path)]
+    backs = [bcg_path+x for x in listdir(bcg_path) if x.endswith('.jpg')]
+    cards = [img_path+x for x in listdir(img_path) if x.endswith('.jpg')]
 
-    im_size = 1024
-
-    batch = []
+    batch_img = []
+    batch_ann = []
 
     for i in range(batch_size):
         back_id = randint(0,len(backs)-1)
         card_id = randint(0,len(cards)-1)
-        card_size = randint(500,900)
+        card_size = randint(round(0.5*im_size),round(0.85*im_size))
         
         bckg = cv2.imread(backs[back_id])
         bckg = cv2.resize(bckg,(im_size,im_size))
@@ -50,12 +51,11 @@ def generate_batch(batch_size=64, save=False):
         ratio = card.shape[0]/card.shape[1]
         card = cv2.resize(card, (card_size, round(card_size*ratio)))
         card_shape = card.shape
-        
-        print(cards[card_id])
 
         cardback = np.zeros(bckg.shape)
-        x = randint(50, im_size-card_shape[0]-50)
-        y = randint(50, im_size-card_shape[1]-50)
+        border = round(im_size*0.05)
+        x = randint(border, im_size-card_shape[0]-border)
+        y = randint(border, im_size-card_shape[1]-border)
         cardback[x:x+card_shape[0],y:y+card_shape[1]] = card
 
         noise = np.random.random(bckg.shape)*randint(0,100)
@@ -73,11 +73,16 @@ def generate_batch(batch_size=64, save=False):
         if save:
             cv2.imwrite('dataset/random/img_{}.png'.format(i), image)
     
-        ann = np.zeros(12)
+        ann = []
         for param in cards[card_id].split('/')[-1].replace('.jpg', '').split('_'):
-            ann[ann_dict[param]]=1
+            ann.append(ann_dict[param])
+        ann = np.array(ann)
 
-        print("img_{}.png: {}".format(i,ann))
-        batch.append((image, ann))
+        image = np.transpose(image,(2,0,1))
+        batch_img.append(from_numpy(image).type('torch.FloatTensor'))
+        batch_ann.append(from_numpy(ann).type('torch.LongTensor'))
     
-    return batch
+    batch_img = torch.stack(batch_img)
+    batch_ann = torch.stack(batch_ann)
+    
+    return batch_img, batch_ann
