@@ -28,7 +28,7 @@ ann_dict = {
     }
 
 
-def generate_batch(batch_size=64, save=False, im_size=512):
+def generate_batch(batch_size=64, save=False, im_size=512, multiorient=False):
 
     bcg_path = 'dataset/backgrounds/'
     img_path = 'dataset/clean_cards/'
@@ -42,7 +42,7 @@ def generate_batch(batch_size=64, save=False, im_size=512):
     for i in range(batch_size):
         back_id = randint(0,len(backs)-1)
         card_id = randint(0,len(cards)-1)
-        card_size = randint(round(0.5*im_size),round(0.85*im_size))
+        card_size = randint(round(0.74*im_size),round(0.89*im_size))
         
         bckg = cv2.imread(backs[back_id])
         bckg = cv2.resize(bckg,(im_size,im_size))
@@ -60,10 +60,10 @@ def generate_batch(batch_size=64, save=False, im_size=512):
 
         noise = np.random.random(bckg.shape)*randint(0,100)
 
-        angle = randint(-50,50)
-        if angle > 25:
+        angle = randint(-30,30)
+        if angle > 15 and multiorient:
             angle = 90-angle
-        if angle < -25:
+        if angle < -15 and multiorient:
             angle = -90-angle
         cardback = rotate_image(cardback, angle).astype(np.uint8)
 
