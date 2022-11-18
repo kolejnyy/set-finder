@@ -1,16 +1,10 @@
-from time import time
 import cv2
-import numpy as np
-from os import listdir, mkdir, makedirs, system
-from random import randint
+from os import listdir
 from tqdm import tqdm
-from models.recognizer import Recognizer
-from generate_data import generate_batch
 import torch
-from os import system, listdir
-from os.path import isfile, join
+from os import listdir
+from test_model import test_model
 
-# system('cls')
 
 def parse_file(filename):
 	with open(filename) as f:
@@ -72,3 +66,24 @@ def test_model(recog, print_res = False):
 		print("Number accuracy: {:2.2f}%".format(num_right/len(file_names)*100))
 
 	return corr_guesses/total_guesses*100, full_correct/len(file_names)*100
+
+
+
+def draw_accuracy_graphs(recog):
+	xs = []
+	ys1 = []
+	ys2 = []
+
+	for i in tqdm(range(1, 30)):
+		xs.append(i)
+		
+		recog.load_state_dict(torch.load('weights/recognizer_{}.pth'.format(i*100-1)))
+		recog.eval()
+		classwise, total = test_model(recog, print_res=False)
+		ys1.append(total)
+		ys2.append(classwise)
+
+
+	plt.plot(xs, ys1)
+	plt.plot(xs, ys2)
+	plt.show()
