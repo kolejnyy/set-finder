@@ -3,7 +3,7 @@ from os import listdir
 from tqdm import tqdm
 import torch
 from os import listdir
-from test_model import test_model
+import matplotlib.pyplot as plt
 
 
 def parse_file(filename):
@@ -74,7 +74,7 @@ def draw_accuracy_graphs(recog):
 	ys1 = []
 	ys2 = []
 
-	for i in tqdm(range(1, 30)):
+	for i in tqdm(range(1, 20)):
 		xs.append(i)
 		
 		recog.load_state_dict(torch.load('weights/recognizer_{}.pth'.format(i*100-1)))
