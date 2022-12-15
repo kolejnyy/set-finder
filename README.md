@@ -45,6 +45,8 @@ The detection engine is based on the OpenCV library. The algorithm is as follows
 
 The recognition engine is a Convolutional Neural network, with 6 layers (the exact architecture is available at `models/recognizer.py`) followed by a fully connected layer. A pretrained model is currently unavailable, as I deleted it with an uncareful use of a `git reset` command and I am currently training a new one. The model is trained using Adam optimizer, with initial learning rate 0.0005, on batches of size 32. The images for each batch are generated dynamically from the dataset of collected backgrounds and scanned cards; an example of such a batch is available at `dataset/random`.
 
+After training, models from different epochs are evaluated against accuracy on a validation set, consisting of 93 real-life card images, and the model with the highest accuracy (the best model achieved 100% recognition score) is saved.
+
 <p align="center">
   <br/>
   <img src="dataset/random/img_26.png" />
