@@ -22,7 +22,7 @@ recognizer.load_state_dict(torch.load('weights/finetuned.pth'))
 setfinder = SetFinder(detector, recognizer, 256, True)
 
 # Specify the path to the image
-path = 'dataset/full_photo/IMG_2779.JPG'
+path = 'images/IMG_2779.png'
 sets = setfinder.find_sets(path)
 ```
 
