@@ -10,9 +10,9 @@ import torch
 
 recog = Recognizer(256)
 
-recog.load_state_dict(torch.load('weights/recognizer_599.pth'))
+#recog.load_state_dict(torch.load('weights/recognizer_599.pth'))
 
-optimizer = torch.optim.Adam(recog.parameters(), lr=0.00005, weight_decay=1e-5)
+optimizer = torch.optim.Adam(recog.parameters(), lr=0.0005, weight_decay=1e-5)
 criterion = torch.nn.CrossEntropyLoss()
 
 epochs = 3000

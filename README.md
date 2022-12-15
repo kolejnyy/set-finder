@@ -29,11 +29,65 @@ sets = setfinder.find_sets(path)
 ## Detection engine
 
 The detection engine is based on the OpenCV library. The algorithm is as follows:
-- The input image is converted to grayscale and binarized using a
+- The input image is converted to grayscale and binarized using a predeifned threshold
+- The boundaries of each region are found using the OpenCV findContours function, discrading the regions that are too small or too large
+- Having found the boundaries of the regions, the algorithm checks if the region is a card by checking if the region is contained in any of the remaining regions. If it is, the region is discarded
+- Finally, the obtained card regions are cropped from the input image, resized and unified to a sqaure image of a given size for further processing
+
+
+<p align="center">
+  <br/>
+  <img src="images/detection_pipeline.png" />
+</p>
+
 
 ## Recognition engine
 
-Results of traninig different models on 1000 dynamically generated mini-batches consisting of 32 samples (single-card images with distinct backgrounds of size 512x512) each:
-* 5 convolutional layers (3/16/32/64/64): ~2.6 loss
-* 6 convolutional layers (3/16/32/64/128/128): ~2.3 loss
-* 7 convolutional layers (3/16/32/64/128/256/256): 
+The recognition engine is a Convolutional Neural network, with 6 layers (the exact architecture is available at `models/recognizer.py`) followed by a fully connected layer. A pretrained model is currently unavailable, as I deleted it with an uncareful use of a `git reset` command and I am currently training a new one. The model is trained using Adam optimizer, with initial learning rate 0.0005, on batches of size 32. The images for each batch are generated dynamically from the dataset of collected backgrounds and scanned cards; an example of such a batch is available at `dataset/random`.
+
+<p align="center">
+  <br/>
+  <img src="dataset/random/img_26.png" />
+  <img src="dataset/random/img_1.png" />
+  <img src="dataset/random/img_3.png" />
+</p>
+
+
+## SetFinder
+The `SetFinder` class is a wrapper for the `Detector` and `Recognizer` classes. It is responsible for finding the sets in the image. For each card, the `SetFinder` class first detects the card and then recognizes it.Then, it finds all the sets in the image by checking all the possible combinations of 3 cards.
+
+## Results
+The results of the finetuned model are very satisfactory. The model is able to recognize the detected cards and  with 100% accuracy on the test set.
+
+<p align="center">
+  <br/>
+  <img src="images/IMG_2779.png" style='width: 30%; object-fit: contain'/>
+</p>
+
+```
+Detected cards:
+Card #1: blue wave clean 2
+Card #2: blue romb clean 1
+Card #3: blue romb full 3
+Card #4: green wave full 1
+Card #5: green oval strip 1
+Card #6: blue oval clean 1
+Card #7: green oval clean 3
+Card #8: green romb full 2
+Card #9: green wave strip 2
+Card #10: red wave strip 2
+Card #11: blue wave full 1
+Card #12: red wave full 1
+
+
+There are 2 sets in this photo
+------------------------------
+blue romb clean 1
+green oval strip 1
+red wave full 1
+--------------------
+green wave full 1
+blue wave full 1
+red wave full 1
+--------------------
+```
