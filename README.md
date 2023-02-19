@@ -4,7 +4,7 @@ A tool for finding a set of cards in a picture of a table.
 
 ## TODO
 - [ ] Develop a neural network for card detection
-- [ ] Optimize speed, so that the tool can be used in real time 
+- [x] Optimize speed, so that the tool can be used in real time 
 
 ## Overview
 The model consists of two independent parts: detection and recognition engines. The detection engine is responsible for finding the cards on the table, while the recognition engine is responsible for recognizing the cards. The detection engine uses more classical image processing approach utilizing the OpenCV library, while the recognition engine is based on a Convolutional Neural Network architecture.
@@ -93,3 +93,44 @@ blue wave full 1
 red wave full 1
 --------------------
 ```
+
+
+## Using the tool in real time
+
+The tool can be used in real time by using the `VideoAgent` class. The `VideoAgent` class is a wrapper for the `SetFinder` class, which is used to find the sets in the video frames. The `VideoAgent` class is responsible for reading the video frames, finding the sets in each frame and displaying the results.
+
+An instance of the `VideoAgent` class takes the following arguments:
+- `cam_port` - the port of the camera to be used
+- `res_W` - the width of the video frames
+- `res_H` - the height of the video frames
+- `detector` - an instance of the `Detector` class
+- `recognizer` - an instance of the `Recognizer` class
+- `recog_loadpath` - the path to the weights of the pretrained model
+
+The `VideoAgent` class can be used as follows:
+```
+from models.VideoAgent import VideoAgent
+
+# Initialize the VideoAgent
+agent = VideoAgent(2, 1920, 1080)
+
+# Run the agent
+agent.open()
+agent.run()
+```
+
+Having run the `VideoAgent` class, the video frames will be displayed in a window. One can steer the agent by pressing the following keys:
+
+- `d` - toggle the display of the detected cards
+- `o` - increase the detection thresholding value
+- `p` - decrease the detection thresholding value
+- `r` - display one of the recognized Sets
+- `s` - save the current frame
+- `l` - load the last saved frame
+- `q` - clear the displays
+- `ESC` - exit the program
+
+<p align="center">
+  <img src="images/reallife_0.png" width=40%/>
+  <img src="images/reallife_1.png" width=40%/>
+</p>

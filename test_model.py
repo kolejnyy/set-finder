@@ -21,7 +21,7 @@ img_path = 'dataset/eval/images/'
 file_names = listdir(ann_path)
 
 def test_model(recog, print_res = False):
-
+	#recog.eval()
 	corr_guesses = 0
 	total_guesses = 0
 	full_correct = 0
@@ -74,7 +74,7 @@ def draw_accuracy_graphs(recog):
 	ys1 = []
 	ys2 = []
 
-	for i in tqdm(range(1, 20)):
+	for i in tqdm(range(1, 30)):
 		xs.append(i)
 		
 		recog.load_state_dict(torch.load('weights/recognizer_{}.pth'.format(i*100-1)))

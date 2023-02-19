@@ -90,3 +90,7 @@ class Detector:
 		clr_im = cv2.resize(cv2.imread(path), im.transpose().shape) 
 		cards = [self.get_card(clr_im, x) for x in card_contours]
 		return cards, card_contours, im.transpose().shape
+
+	
+	def set_threshold(self, thr):
+		self.thr = thr
